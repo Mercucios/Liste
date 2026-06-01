@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zettelwirtschaft 🛒</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f13;
+    --surface: #1a1a22;
+    --surface2: #22222e;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #f0f0f5;
+    --text2: #9898aa;
+    --text3: #55556a;
+    --blue: #4f8ef7;
+    --blue-soft: rgba(79,142,247,0.15);
+    --violet: #a374f7;
+    --violet-soft: rgba(163,116,247,0.15);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 6rem;
+  }
+
+  /* IDENTITY SCREEN */
+  #identityScreen {
+    position: fixed; inset: 0; z-index: 100;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem;
+  }
+  .identity-card {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    max-width: 340px; width: 100%;
+    text-align: center;
+  }
+  .identity-card .emoji { font-size: 3rem; margin-bottom: 1rem; }
+  .identity-card h2 { font-family: 'DM Serif Display', serif; font-size: 1.6rem; margin-bottom: 0.5rem; }
+  .identity-card p { color: var(--text2); font-size: 0.9rem; margin-bottom: 2rem; }
+  .identity-btns { display: flex; flex-direction: column; gap: 0.75rem; }
+  .id-btn {
+    padding: 0.9rem 1.5rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .id-btn:hover { transform: translateY(-1px); }
+  .id-btn.blue { border-color: var(--blue); background: var(--blue-soft); color: var(--blue); }
+  .id-btn.violet { border-color: var(--violet); background: var(--violet-soft); color: var(--violet); }
+  .id-btn .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .id-btn.blue .dot { background: var(--blue); }
+  .id-btn.violet .dot { background: var(--violet); }
+
+  /* HEADER */
+  .app-header {
+    padding: 2rem 1.25rem 1rem;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 10;
+    background: linear-gradient(to bottom, var(--bg) 80%, transparent);
+  }
+  .app-title { font-family: 'DM Serif Display', serif; font-size: 1.8rem; }
+  .user-chip {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 99px;
+    border: 1px solid var(--border2);
+    background: var(--surface);
+    font-size: 0.85rem; font-weight: 500;
+    cursor: pointer;
+  }
+  .user-chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* SYNC STATUS */
+  .sync-bar {
+    margin: 0 1.25rem 1rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    font-size: 0.8rem; color: var(--text2);
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; }
+  .sync-dot.error { background: #f87171; }
+  .sync-dot.loading { background: #fbbf24; animation: blink 1s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  /* ADD LIST BTN */
+  .add-list-btn {
+    margin: 0 1.25rem 1.5rem;
+    width: calc(100% - 2.5rem);
+    padding: 0.85rem;
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--border2);
+    background: transparent;
+    color: var(--text2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  }
+  .add-list-btn:hover { border-color: var(--text3); color: var(--text); background: var(--surface); }
+
+  /* LIST CARDS */
+  .lists-container { padding: 0 1.25rem; display: flex; flex-direction: column; gap: 1.25rem; }
+  .list-card {
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .list-header {
+    padding: 1.1rem 1.25rem 0.9rem;
+    display: flex; align-items: center; gap: 0.75rem;
+    position: relative;
+  }
+  .list-emoji { font-size: 1.5rem; line-height: 1; }
+  .list-name { font-weight: 600; font-size: 1.05rem; flex: 1; }
+  .list-count { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+  .list-menu-btn {
+    background: none; border: none; color: rgba(255,255,255,0.4);
+    cursor: pointer; font-size: 1.2rem; padding: 0.25rem;
+    transition: color 0.2s;
+  }
+  .list-menu-btn:hover { color: rgba(255,255,255,0.8); }
+
+  /* ITEMS */
+  .items-wrapper { padding: 0 1.25rem 0.5rem; }
+  .item-row {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(-4px); } to { opacity:1; transform: translateY(0); } }
+  .item-row:last-child { border-bottom: none; }
+  .item-check {
+    width: 20px; height: 20px; border-radius: 6px;
+    border: 1.5px solid rgba(255,255,255,0.2);
+    background: transparent; cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .item-check.checked { background: #4ade80; border-color: #4ade80; }
+  .item-check.checked::after { content: '✓'; font-size: 11px; color: #0f0f13; font-weight: 700; }
+  .item-info { flex: 1; min-width: 0; }
+  .item-name-text { font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .item-name-text.done { text-decoration: line-through; opacity: 0.4; }
+  .item-meta { display: flex; align-items: center; gap: 0.4rem; margin-top: 2px; }
+  .item-qty { font-size: 0.75rem; color: var(--text2); }
+  .item-owner-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .item-del {
+    background: none; border: none; color: var(--text3);
+    cursor: pointer; font-size: 1.1rem; padding: 0.2rem 0.3rem;
+    transition: color 0.15s; flex-shrink: 0;
+  }
+  .item-del:hover { color: #f87171; }
+
+  /* ADD ITEM ROW */
+  .add-item-row {
+    display: flex; gap: 0.5rem;
+    padding: 0.75rem 1.25rem 1rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  .add-item-row input {
+    flex: 1; background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+    padding: 0.5rem 0.75rem; outline: none; transition: border 0.2s;
+    min-width: 0;
+  }
+  .add-item-row input:focus { border-color: var(--border2); }
+  .add-item-row input::placeholder { color: var(--text3); }
+  .qty-input { width: 70px !important; flex: none !important; }
+  .add-item-btn {
+    background: rgba(255,255,255,0.1); border: 1px solid var(--border2);
+    border-radius: var(--radius-sm); color: var(--text);
+    cursor: pointer; padding: 0.5rem 0.75rem; font-size: 1.1rem;
+    transition: all 0.15s; flex-shrink: 0;
+  }
+  .add-item-btn:hover { background: rgba(255,255,255,0.18); }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 50;
+    background: rgba(0,0,0,0.7);
+    display: flex; align-items: flex-end; justify-content: center;
+    padding: 1rem;
+  }
+  .modal-overlay.hidden { display: none; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 1.75rem 1.5rem;
+    width: 100%; max-width: 420px;
+    max-height: 85vh; overflow-y: auto;
+  }
+  .modal h3 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; margin-bottom: 1.25rem; }
+  .modal label { display: block; font-size: 0.82rem; color: var(--text2); margin-bottom: 0.35rem; margin-top: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .modal input[type=text] {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border2);
+    border-radius: var(--radius-sm); color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 1rem;
+    padding: 0.65rem 0.9rem; outline: none;
+  }
+  .emoji-grid {
+    display: grid; grid-template-columns: repeat(8, 1fr); gap: 0.4rem; margin-top: 0.4rem;
+  }
+  .emoji-opt {
+    aspect-ratio: 1; border-radius: 8px; border: 1.5px solid transparent;
+    background: var(--surface2); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+    transition: all 0.15s;
+  }
+  .emoji-opt:hover, .emoji-opt.selected { border-color: var(--border2); background: var(--surface); }
+  .emoji-opt.selected { border-color: rgba(255,255,255,0.4); }
+  .color-grid {
+    display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.4rem;
+  }
+  .color-opt {
+    width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
+    border: 2px solid transparent; transition: all 0.15s;
+  }
+  .color-opt:hover, .color-opt.selected { border-color: rgba(255,255,255,0.7); transform: scale(1.1); }
+  .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
+  .btn-primary {
+    flex: 1; padding: 0.75rem; border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.12); border: 1px solid var(--border2);
+    color: var(--text); font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-primary:hover { background: rgba(255,255,255,0.2); }
+  .btn-danger {
+    padding: 0.75rem 1rem; border-radius: var(--radius-sm);
+    background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3);
+    color: #f87171; font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-danger:hover { background: rgba(248,113,113,0.2); }
+  .empty-list { padding: 1.5rem; text-align: center; color: var(--text3); font-size: 0.9rem; }
+
+  /* CONFIG NOTICE */
+  .config-notice {
+    margin: 1rem 1.25rem;
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-sm);
+    background: rgba(251,191,36,0.08);
+    border: 1px solid rgba(251,191,36,0.25);
+    color: #fbbf24;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+  .config-notice strong { display: block; margin-bottom: 0.25rem; }
+</style>
+</head>
+<body>
+
+<!-- Firebase Config Notice (shown when not configured) -->
+<div class="config-notice" id="configNotice" style="display:none">
+  <strong>⚙️ Firebase noch nicht eingerichtet</strong>
+  Öffne diese Datei in einem Texteditor und füge deine Firebase-Konfiguration ein (Zeile mit <code>firebaseConfig</code>).
+</div>
+
+<!-- Identity Screen -->
+<div id="identityScreen">
+  <div class="identity-card">
+    <div class="emoji">👋</div>
+    <h2>Wer bist du?</h2>
+    <p>Diese Frage wird nur einmal gestellt und auf deinem Gerät gespeichert.</p>
+    <div class="identity-btns">
+      <button class="id-btn blue" onclick="setUser('david','blue')">
+        <span class="dot"></span> David (blau)
+      </button>
+      <button class="id-btn violet" onclick="setUser('catze','violet')">
+        <span class="dot"></span> Catze (violett)
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Main App -->
+<div id="app" style="display:none">
+  <div class="app-header">
+    <div class="app-title">Zettelwirtschaft</div>
+    <div class="user-chip" onclick="resetUser()" title="Benutzer wechseln">
+      <span class="dot" id="userDot"></span>
+      <span id="userName"></span>
+    </div>
+  </div>
+
+  <div class="sync-bar">
+    <div class="sync-dot loading" id="syncDot"></div>
+    <span id="syncText">Verbinde...</span>
+  </div>
+
+  <button class="add-list-btn" onclick="openNewListModal()">
+    + Neue Liste erstellen
+  </button>
+
+  <div class="lists-container" id="listsContainer"></div>
+</div>
+
+<!-- New/Edit List Modal -->
+<div class="modal-overlay hidden" id="listModal">
+  <div class="modal">
+    <h3 id="modalTitle">Neue Liste</h3>
+    <label>Name</label>
+    <input type="text" id="listNameInput" placeholder="z.B. Supermarkt" maxlength="40">
+    <label>Emoji</label>
+    <div class="emoji-grid" id="emojiGrid"></div>
+    <label>Hintergrundfarbe</label>
+    <div class="color-grid" id="colorGrid"></div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="saveList()">Speichern</button>
+      <button class="btn-danger" id="deleteListBtn" onclick="deleteCurrentList()" style="display:none">Löschen</button>
+      <button class="btn-primary" onclick="closeModal()" style="flex:0; padding: 0.75rem 1rem;">✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set, push, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+// ═══════════════════════════════════════════════
+// 🔧 HIER DEINE FIREBASE KONFIGURATION EINFÜGEN
+// ═══════════════════════════════════════════════
+const firebaseConfig = {
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyC0oBGVi_mScjg1vN-LKjc58_BgIP2-s_g",
+  authDomain: "zettelwirtschaft-ca193.firebaseapp.com",
+  databaseURL: "https://zettelwirtschaft-ca193-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "zettelwirtschaft-ca193",
+  storageBucket: "zettelwirtschaft-ca193.firebasestorage.app",
+  messagingSenderId: "223187989807",
+  appId: "1:223187989807:web:c3db93ac788a4e4d135dda",
+  measurementId: "G-2ZEQZ112EH"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+};
+// ═══════════════════════════════════════════════
+
+const isConfigured = firebaseConfig.apiKey !== "DEINE_API_KEY";
+
+const EMOJIS = ['🛒','🍎','🥩','🥦','🧴','🧹','🛋️','🪴','💊','📚','👕','🐾','🎁','🍕','🧃','☕','🫙','🧺','🔧','💡','🎮','🌿','🍰','🥗'];
+const COLORS = [
+  '#1a1a2e','#16213e','#0d3b2e','#2d1b3d','#2e1b1b',
+  '#1e2a1e','#2a2a1e','#1e2a2a','#2a1e2a','#1a2535',
+  '#0f2027','#1b2838','#2c1810','#102027','#27102c'
+];
+
+let db, listsRef, currentUser, editingListId = null;
+let selectedEmoji = EMOJIS[0], selectedColor = COLORS[0];
+
+// Build emoji & color pickers
+const emojiGrid = document.getElementById('emojiGrid');
+EMOJIS.forEach(e => {
+  const d = document.createElement('div');
+  d.className = 'emoji-opt'; d.textContent = e;
+  d.onclick = () => { selectedEmoji = e; document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('selected')); d.classList.add('selected'); };
+  emojiGrid.appendChild(d);
+});
+emojiGrid.firstChild.classList.add('selected');
+
+const colorGrid = document.getElementById('colorGrid');
+COLORS.forEach(c => {
+  const d = document.createElement('div');
+  d.className = 'color-opt'; d.style.background = c;
+  d.onclick = () => { selectedColor = c; document.querySelectorAll('.color-opt').forEach(x=>x.classList.remove('selected')); d.classList.add('selected'); };
+  colorGrid.appendChild(d);
+});
+colorGrid.firstChild.classList.add('selected');
+
+// User management
+window.setUser = (id, color) => {
+  localStorage.setItem('shopping-user-id', id);
+  localStorage.setItem('shopping-user-color', color);
+  document.getElementById('identityScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  initUser();
+};
+
+window.resetUser = () => {
+  if (confirm('Benutzer wechseln?')) {
+    localStorage.removeItem('shopping-user-id');
+    localStorage.removeItem('shopping-user-color');
+    location.reload();
+  }
+};
+
+function initUser() {
+  currentUser = {
+    id: localStorage.getItem('shopping-user-id'),
+    color: localStorage.getItem('shopping-user-color')
+  };
+  const dot = document.getElementById('userDot');
+  const nameEl = document.getElementById('userName');
+  dot.style.background = currentUser.color === 'blue' ? 'var(--blue)' : 'var(--violet)';
+  nameEl.textContent = currentUser.id === 'david' ? 'David' : 'Catze';
+
+  if (!isConfigured) {
+    document.getElementById('configNotice').style.display = 'block';
+    document.getElementById('syncDot').className = 'sync-dot error';
+    document.getElementById('syncText').textContent = 'Firebase nicht konfiguriert';
+    renderOfflineDemo();
+    return;
+  }
+  initFirebase();
+}
+
+function initFirebase() {
+  const app = initializeApp(firebaseConfig);
+  db = getDatabase(app);
+  listsRef = ref(db, 'lists');
+
+  onValue(listsRef, (snap) => {
+    document.getElementById('syncDot').className = 'sync-dot';
+    document.getElementById('syncText').textContent = 'Live synchronisiert';
+    renderLists(snap.val() || {});
+  }, () => {
+    document.getElementById('syncDot').className = 'sync-dot error';
+    document.getElementById('syncText').textContent = 'Verbindungsfehler';
+  });
+}
+
+function renderLists(data) {
+  const container = document.getElementById('listsContainer');
+  container.innerHTML = '';
+  Object.entries(data).forEach(([listId, list]) => {
+    const items = list.items || {};
+    const itemCount = Object.keys(items).length;
+    const doneCount = Object.values(items).filter(i => i.done).length;
+
+    const card = document.createElement('div');
+    card.className = 'list-card';
+    card.style.background = list.color || '#1a1a22';
+
+    const itemsHtml = Object.entries(items)
+      .sort(([,a],[,b]) => (a.done - b.done) || (a.ts - b.ts))
+      .map(([itemId, item]) => {
+        const ownerColor = item.owner === 'david' ? 'var(--blue)' : 'var(--violet)';
+        return `<div class="item-row">
+          <div class="item-check ${item.done ? 'checked' : ''}" onclick="toggleItem('${listId}','${itemId}',${!item.done})" role="checkbox" aria-checked="${item.done}" aria-label="${item.name}"></div>
+          <div class="item-info">
+            <div class="item-name-text ${item.done ? 'done' : ''}">${item.name}</div>
+            ${item.qty ? `<div class="item-meta"><span class="item-qty">× ${item.qty}</span></div>` : ''}
+          </div>
+          <div class="item-owner-dot" style="background:${ownerColor}" title="${item.owner === 'david' ? 'David' : 'Catze'}"></div>
+          <button class="item-del" onclick="deleteItem('${listId}','${itemId}')" aria-label="Löschen">×</button>
+        </div>`;
+      }).join('');
+
+    card.innerHTML = `
+      <div class="list-header">
+        <span class="list-emoji">${list.emoji || '📋'}</span>
+        <span class="list-name">${list.name}</span>
+        <span class="list-count">${doneCount}/${itemCount}</span>
+        <button class="list-menu-btn" onclick="openEditListModal('${listId}')" aria-label="Liste bearbeiten">⋯</button>
+      </div>
+      <div class="items-wrapper">
+        ${itemsHtml || '<div class="empty-list">Noch keine Einträge</div>'}
+      </div>
+      <div class="add-item-row">
+        <input type="text" id="name-${listId}" placeholder="Eintrag..." onkeydown="if(event.key==='Enter')addItem('${listId}')">
+        <input type="text" id="qty-${listId}" placeholder="Menge" class="qty-input" onkeydown="if(event.key==='Enter')addItem('${listId}')">
+        <button class="add-item-btn" onclick="addItem('${listId}')" aria-label="Hinzufügen">+</button>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+window.addItem = async (listId) => {
+  const nameEl = document.getElementById('name-' + listId);
+  const qtyEl = document.getElementById('qty-' + listId);
+  const name = nameEl.value.trim();
+  if (!name) return;
+  const itemsRef = ref(db, `lists/${listId}/items`);
+  await push(itemsRef, { name, qty: qtyEl.value.trim(), done: false, owner: currentUser.id, ts: Date.now() });
+  nameEl.value = ''; qtyEl.value = '';
+  nameEl.focus();
+};
+
+window.toggleItem = async (listId, itemId, done) => {
+  await update(ref(db, `lists/${listId}/items/${itemId}`), { done });
+};
+
+window.deleteItem = async (listId, itemId) => {
+  await remove(ref(db, `lists/${listId}/items/${itemId}`));
+};
+
+window.openNewListModal = () => {
+  editingListId = null;
+  document.getElementById('modalTitle').textContent = 'Neue Liste';
+  document.getElementById('listNameInput').value = '';
+  document.getElementById('deleteListBtn').style.display = 'none';
+  document.querySelectorAll('.emoji-opt').forEach((x,i) => x.classList.toggle('selected', i===0));
+  document.querySelectorAll('.color-opt').forEach((x,i) => x.classList.toggle('selected', i===0));
+  selectedEmoji = EMOJIS[0]; selectedColor = COLORS[0];
+  document.getElementById('listModal').classList.remove('hidden');
+};
+
+window.openEditListModal = async (listId) => {
+  editingListId = listId;
+  document.getElementById('modalTitle').textContent = 'Liste bearbeiten';
+  document.getElementById('deleteListBtn').style.display = 'block';
+  const snap = await new Promise(res => onValue(ref(db, `lists/${listId}`), res, { onlyOnce: true }));
+  const list = snap.val();
+  document.getElementById('listNameInput').value = list.name || '';
+  selectedEmoji = list.emoji || EMOJIS[0];
+  selectedColor = list.color || COLORS[0];
+  document.querySelectorAll('.emoji-opt').forEach(x => x.classList.toggle('selected', x.textContent === selectedEmoji));
+  document.querySelectorAll('.color-opt').forEach(x => x.classList.toggle('selected', x.style.background === selectedColor || x.style.backgroundColor === selectedColor));
+  document.getElementById('listModal').classList.remove('hidden');
+};
+
+window.saveList = async () => {
+  const name = document.getElementById('listNameInput').value.trim();
+  if (!name) return;
+  if (editingListId) {
+    await update(ref(db, `lists/${editingListId}`), { name, emoji: selectedEmoji, color: selectedColor });
+  } else {
+    await push(listsRef, { name, emoji: selectedEmoji, color: selectedColor, items: {} });
+  }
+  closeModal();
+};
+
+window.deleteCurrentList = async () => {
+  if (!editingListId) return;
+  if (confirm('Liste wirklich löschen?')) {
+    await remove(ref(db, `lists/${editingListId}`));
+    closeModal();
+  }
+};
+
+window.closeModal = () => {
+  document.getElementById('listModal').classList.add('hidden');
+  editingListId = null;
+};
+
+// Offline demo mode
+function renderOfflineDemo() {
+  const container = document.getElementById('listsContainer');
+  container.innerHTML = `<div style="text-align:center; color:var(--text2); padding:3rem 1rem; font-size:0.9rem;">
+    📡 Bitte Firebase konfigurieren um die App zu nutzen.<br><br>
+    Scroll nach unten für die Anleitung.
+  </div>`;
+}
+
+// Init
+const savedUser = localStorage.getItem('shopping-user-id');
+if (savedUser) {
+  document.getElementById('identityScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  initUser();
+}
+</script>
+</body>
+</html>
