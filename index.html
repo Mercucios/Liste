@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Zettelwirtschaft 🛒</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Caveat+Brush&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0f0f13;
@@ -22,6 +22,7 @@
     --violet-soft: rgba(163,116,247,0.18);
     --radius: 18px;
     --radius-sm: 12px;
+    --safe-top: env(safe-area-inset-top, 12px);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -29,228 +30,204 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Caveat', cursive;
     min-height: 100vh;
     padding-bottom: calc(2rem + var(--safe-bottom));
-    overscroll-behavior: none;
   }
 
-  /* ── IDENTITY SCREEN ── */
+  /* ── IDENTITY ── */
   #identityScreen {
     position: fixed; inset: 0; z-index: 100;
     background: var(--bg);
-    display: flex; align-items: center; justify-content: center;
-    padding: 2rem;
+    display: flex; align-items: center; justify-content: center; padding: 2rem;
   }
   .identity-card {
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    border-radius: 24px;
-    padding: 2.5rem 1.75rem;
-    max-width: 340px; width: 100%;
-    text-align: center;
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 24px; padding: 2.5rem 1.75rem;
+    max-width: 340px; width: 100%; text-align: center;
   }
   .identity-card .big-emoji { font-size: 3.5rem; margin-bottom: 1rem; }
-  .identity-card h2 { font-family: 'DM Serif Display', serif; font-size: 1.7rem; margin-bottom: 0.5rem; }
-  .identity-card p { color: var(--text2); font-size: 0.9rem; margin-bottom: 2rem; line-height: 1.5; }
+  .identity-card h2 { font-family: 'Caveat Brush', cursive; font-size: 2rem; margin-bottom: 0.5rem; }
+  .identity-card p { color: var(--text2); font-size: 1.1rem; margin-bottom: 2rem; line-height: 1.5; }
   .identity-btns { display: flex; flex-direction: column; gap: 0.75rem; }
   .id-btn {
-    padding: 1rem 1.5rem;
-    border-radius: var(--radius-sm);
-    border: 1.5px solid var(--border2);
-    background: var(--surface2);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 1.05rem; font-weight: 500;
-    cursor: pointer; transition: all 0.2s;
-    display: flex; align-items: center; gap: 0.75rem;
+    padding: 1rem 1.5rem; border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border2); background: var(--surface2);
+    color: var(--text); font-family: 'Caveat', cursive; font-size: 1.3rem; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; gap: 0.75rem;
   }
-  .id-btn.blue  { border-color: var(--blue);   background: var(--blue-soft);   color: var(--blue); }
-  .id-btn.violet{ border-color: var(--violet); background: var(--violet-soft); color: var(--violet); }
-  .id-btn .dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .id-btn.blue   { border-color: var(--blue);   background: var(--blue-soft);   color: var(--blue); }
+  .id-btn.violet { border-color: var(--violet); background: var(--violet-soft); color: var(--violet); }
+  .id-btn .dot   { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
   .id-btn.blue   .dot { background: var(--blue); }
   .id-btn.violet .dot { background: var(--violet); }
 
   /* ── HEADER ── */
   .app-header {
-    padding: calc(env(safe-area-inset-top, 12px) + 1rem) 1.25rem 0.75rem;
+    padding: calc(var(--safe-top) + 1rem) 1.25rem 0.75rem;
     display: flex; align-items: center; justify-content: space-between;
     position: sticky; top: 0; z-index: 10;
     background: linear-gradient(to bottom, var(--bg) 75%, transparent);
   }
-  .app-title { font-family: 'DM Serif Display', serif; font-size: 1.75rem; }
+  .app-title { font-family: 'Caveat Brush', cursive; font-size: 2rem; letter-spacing: 0.5px; }
   .user-chip {
     display: flex; align-items: center; gap: 0.45rem;
-    padding: 0.45rem 1rem;
-    border-radius: 99px;
-    border: 1px solid var(--border2);
-    background: var(--surface);
-    font-size: 0.9rem; font-weight: 500;
+    padding: 0.45rem 1rem; border-radius: 99px;
+    border: 1px solid var(--border2); background: var(--surface);
+    font-family: 'Caveat', cursive; font-size: 1.15rem; font-weight: 600;
     cursor: pointer; user-select: none;
   }
   .user-chip .dot { width: 8px; height: 8px; border-radius: 50%; }
 
-  /* ── SYNC BAR ── */
-  .sync-bar {
-    margin: 0 1.25rem 1rem;
-    padding: 0.55rem 1rem;
-    border-radius: var(--radius-sm);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    font-size: 0.8rem; color: var(--text2);
-    display: flex; align-items: center; gap: 0.5rem;
+  /* ── SYNC (subtle) ── */
+  .sync-pill {
+    display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.3rem 0.8rem; margin: 0 1.25rem 1rem;
+    border-radius: 99px; background: rgba(74,222,128,0.08);
+    border: 1px solid rgba(74,222,128,0.15);
+    width: fit-content; font-size: 1rem; color: rgba(74,222,128,0.7);
   }
-  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; flex-shrink: 0; }
-  .sync-dot.error   { background: #f87171; }
-  .sync-dot.loading { background: #fbbf24; animation: blink 1s infinite; }
+  .sync-pill.error   { background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.2); color: rgba(248,113,113,0.7); }
+  .sync-pill.loading { background: rgba(251,191,36,0.08);  border-color: rgba(251,191,36,0.2);  color: rgba(251,191,36,0.7); }
+  .sync-dot-small { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .sync-pill.loading .sync-dot-small { animation: blink 1.4s infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
 
   /* ── ADD LIST BTN ── */
   .add-list-btn {
     margin: 0 1.25rem 1.5rem;
     width: calc(100% - 2.5rem);
-    padding: 1rem;
-    border-radius: var(--radius-sm);
-    border: 1.5px dashed var(--border2);
-    background: transparent;
-    color: var(--text2);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 1rem; font-weight: 500;
+    padding: 1rem; border-radius: var(--radius-sm);
+    border: 1.5px dashed var(--border2); background: transparent;
+    color: var(--text2); font-family: 'Caveat', cursive; font-size: 1.3rem; font-weight: 600;
     cursor: pointer; transition: all 0.2s;
     display: flex; align-items: center; justify-content: center; gap: 0.5rem;
   }
-  .add-list-btn:active { background: var(--surface); }
+  .add-list-btn:active { background: var(--surface); color: var(--text); }
 
   /* ── LISTS GRID ── */
   .lists-container {
     padding: 0 1.25rem;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;
   }
 
-  /* ── LIST TILE (overview) ── */
+  /* ── LIST TILE ── */
   .list-tile {
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
-    min-height: 120px;
-    display: flex; flex-direction: column; justify-content: flex-end;
-    position: relative;
+    border-radius: var(--radius); border: 1px solid var(--border);
+    overflow: hidden; cursor: pointer;
+    transition: transform 0.15s;
+    min-height: 130px; display: flex; flex-direction: column; justify-content: flex-end;
     background-size: cover; background-position: center;
   }
-  .list-tile:active { transform: scale(0.97); }
+  .list-tile:active { transform: scale(0.96); }
   .list-tile-inner {
-    padding: 0.85rem 1rem;
-    background: linear-gradient(to top, rgba(0,0,0,0.72) 60%, transparent);
+    padding: 0.85rem 0.9rem 0.9rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.78) 50%, transparent);
     display: flex; align-items: flex-end; justify-content: space-between;
   }
-  .list-tile-left { display: flex; flex-direction: column; gap: 0.2rem; }
-  .list-tile-emoji { font-size: 1.8rem; line-height: 1; }
-  .list-tile-name  { font-size: 0.95rem; font-weight: 600; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.5); }
-  .list-tile-count { font-size: 0.75rem; color: rgba(255,255,255,0.6); }
+  .list-tile-emoji { font-size: 2rem; line-height: 1; display: block; }
+  .list-tile-name  { font-size: 1.15rem; font-weight: 700; color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,0.6); margin-top: 0.15rem; }
+  .list-tile-count { font-size: 0.9rem; color: rgba(255,255,255,0.55); }
   .list-tile-edit  {
     background: rgba(255,255,255,0.15); border: none; border-radius: 8px;
-    color: #fff; cursor: pointer; padding: 0.3rem 0.5rem; font-size: 1rem;
+    color: #fff; cursor: pointer; padding: 0.3rem 0.55rem; font-size: 1rem;
     backdrop-filter: blur(4px); flex-shrink: 0; align-self: flex-start;
-    margin-top: auto;
+    font-family: sans-serif;
   }
 
   /* ── DETAIL VIEW ── */
   #detailView {
     position: fixed; inset: 0; z-index: 20;
-    background: var(--bg);
     display: flex; flex-direction: column;
     transform: translateX(100%);
     transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    background: var(--bg);
   }
   #detailView.open { transform: translateX(0); }
 
-  .detail-header {
-    padding: calc(env(safe-area-inset-top, 12px) + 0.75rem) 1.25rem 0.75rem;
-    display: flex; align-items: center; gap: 0.75rem;
+  /* BG bleeds through entire detail */
+  .detail-bg-layer {
+    position: fixed; inset: 0; z-index: 0;
     background-size: cover; background-position: center;
-    position: relative; flex-shrink: 0;
-    min-height: 120px;
-  }
-  .detail-header-bg {
-    position: absolute; inset: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0.7));
-  }
-  .detail-header > * { position: relative; z-index: 1; }
-  .back-btn {
-    background: rgba(255,255,255,0.15); border: none;
-    border-radius: 10px; color: #fff; cursor: pointer;
-    padding: 0.5rem 0.75rem; font-size: 1rem;
-    backdrop-filter: blur(4px); flex-shrink: 0;
-  }
-  .detail-title-wrap { flex: 1; }
-  .detail-emoji { font-size: 2rem; line-height: 1; }
-  .detail-name  { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: #fff; }
-  .detail-edit-btn {
-    background: rgba(255,255,255,0.15); border: none;
-    border-radius: 10px; color: #fff; cursor: pointer;
-    padding: 0.5rem 0.75rem; font-size: 1rem;
-    backdrop-filter: blur(4px); flex-shrink: 0;
+    opacity: 0.18; pointer-events: none;
+    transition: background 0.3s;
   }
 
-  .detail-body { flex: 1; overflow-y: auto; padding: 0.5rem 0; }
+  .detail-header {
+    padding: calc(var(--safe-top) + 0.75rem) 1.25rem 0.9rem;
+    display: flex; align-items: center; gap: 0.75rem;
+    flex-shrink: 0; position: relative; z-index: 1;
+    border-bottom: 1px solid var(--border);
+    background: rgba(15,15,19,0.7); backdrop-filter: blur(12px);
+  }
+  .back-btn {
+    background: rgba(255,255,255,0.1); border: none;
+    border-radius: 10px; color: var(--text); cursor: pointer;
+    padding: 0.5rem 0.85rem; font-family: 'Caveat', cursive; font-size: 1.15rem;
+    flex-shrink: 0;
+  }
+  .detail-title-wrap { flex: 1; }
+  .detail-emoji { font-size: 1.8rem; line-height: 1; }
+  .detail-name  { font-family: 'Caveat Brush', cursive; font-size: 1.4rem; color: var(--text); }
+  .detail-edit-btn {
+    background: rgba(255,255,255,0.1); border: none; border-radius: 10px;
+    color: var(--text); cursor: pointer; padding: 0.5rem 0.85rem;
+    font-family: sans-serif; font-size: 1rem; flex-shrink: 0;
+  }
+
+  .detail-body { flex: 1; overflow-y: auto; position: relative; z-index: 1; }
 
   /* ── ITEMS ── */
   .item-row {
     display: flex; align-items: center; gap: 0.75rem;
-    padding: 0.75rem 1.25rem;
+    padding: 0.8rem 1.25rem;
     border-bottom: 1px solid rgba(255,255,255,0.05);
     animation: fadeIn 0.18s ease;
   }
   @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
   .item-check {
-    width: 22px; height: 22px; border-radius: 7px;
+    width: 24px; height: 24px; border-radius: 7px;
     border: 1.5px solid rgba(255,255,255,0.2);
     background: transparent; cursor: pointer; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center; transition: all 0.15s;
   }
   .item-check.checked { background: #4ade80; border-color: #4ade80; }
-  .item-check.checked::after { content:'✓'; font-size:12px; color:#0f0f13; font-weight:700; }
+  .item-check.checked::after { content:'✓'; font-size:13px; color:#0f0f13; font-weight:700; font-family:sans-serif; }
   .item-info { flex: 1; min-width: 0; }
-  .item-name-text { font-size: 1rem; }
+  .item-name-text { font-size: 1.25rem; font-weight: 600; }
   .item-name-text.done { text-decoration: line-through; opacity: 0.4; }
-  .item-qty-text { font-size: 0.78rem; color: var(--text2); margin-top: 1px; }
+  .item-qty-text { font-size: 1rem; color: var(--text2); }
   .item-owner-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
   .item-del {
     background: none; border: none; color: var(--text3);
-    cursor: pointer; font-size: 1.3rem; padding: 0.25rem 0.4rem;
-    transition: color 0.15s; flex-shrink: 0; line-height: 1;
+    cursor: pointer; font-size: 1.4rem; padding: 0.25rem 0.4rem;
+    line-height: 1; font-family: sans-serif; flex-shrink: 0;
   }
   .item-del:active { color: #f87171; }
-  .empty-list { padding: 3rem 1.5rem; text-align: center; color: var(--text3); font-size: 0.95rem; }
+  .empty-list { padding: 3rem 1.5rem; text-align: center; color: var(--text3); font-size: 1.2rem; }
 
-  /* ── ADD ITEM BAR (sticky bottom) ── */
+  /* ── ADD ITEM BAR ── */
   .add-item-bar {
     padding: 0.75rem 1.25rem calc(0.75rem + var(--safe-bottom));
     border-top: 1px solid var(--border);
-    background: var(--bg);
-    display: flex; gap: 0.5rem; flex-shrink: 0;
+    background: rgba(15,15,19,0.85); backdrop-filter: blur(12px);
+    display: flex; gap: 0.5rem; flex-shrink: 0; position: relative; z-index: 1;
   }
   .add-item-bar input {
     background: var(--surface); border: 1px solid var(--border2);
     border-radius: var(--radius-sm); color: var(--text);
-    font-family: 'DM Sans', sans-serif; font-size: 1rem;
-    padding: 0.7rem 1rem; outline: none; min-width: 0;
-    -webkit-appearance: none;
+    font-family: 'Caveat', cursive; font-size: 1.2rem;
+    padding: 0.7rem 1rem; outline: none; -webkit-appearance: none;
   }
   .add-item-bar input:focus { border-color: rgba(255,255,255,0.3); }
   .add-item-bar input::placeholder { color: var(--text3); }
   .name-inp { flex: 1; }
-  .qty-inp  { width: 80px; }
+  .qty-inp  { width: 85px; }
   .add-btn  {
     background: var(--surface2); border: 1px solid var(--border2);
     border-radius: var(--radius-sm); color: var(--text);
-    cursor: pointer; padding: 0.7rem 1rem; font-size: 1.3rem;
-    flex-shrink: 0; line-height: 1;
+    cursor: pointer; padding: 0.7rem 1rem; font-size: 1.4rem;
+    flex-shrink: 0; line-height: 1; font-family: sans-serif;
   }
   .add-btn:active { background: rgba(255,255,255,0.15); }
 
@@ -262,106 +239,97 @@
   }
   .modal-overlay.hidden { display: none; }
   .modal {
-    background: var(--surface);
-    border: 1px solid var(--border2);
+    background: var(--surface); border: 1px solid var(--border2);
     border-radius: 24px 24px 0 0;
     padding: 1.5rem 1.5rem calc(1.5rem + var(--safe-bottom));
-    width: 100%; max-width: 500px;
-    max-height: 90vh; overflow-y: auto;
+    width: 100%; max-width: 500px; max-height: 92vh; overflow-y: auto;
   }
   .modal-handle { width: 40px; height: 4px; background: var(--border2); border-radius: 99px; margin: 0 auto 1.25rem; }
-  .modal h3 { font-family: 'DM Serif Display', serif; font-size: 1.4rem; margin-bottom: 1.25rem; }
-  .modal label { display: block; font-size: 0.78rem; color: var(--text2); margin-bottom: 0.35rem; margin-top: 1.1rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  .modal h3 { font-family: 'Caveat Brush', cursive; font-size: 1.7rem; margin-bottom: 1.25rem; }
+  .modal label { display: block; font-size: 1rem; color: var(--text2); margin-bottom: 0.35rem; margin-top: 1.1rem; }
   .modal input[type=text] {
     width: 100%; background: var(--surface2); border: 1px solid var(--border2);
     border-radius: var(--radius-sm); color: var(--text);
-    font-family: 'DM Sans', sans-serif; font-size: 1rem;
+    font-family: 'Caveat', cursive; font-size: 1.2rem;
     padding: 0.75rem 1rem; outline: none; -webkit-appearance: none;
   }
 
-  /* Emoji picker trigger */
-  .emoji-picker-wrap { position: relative; display: inline-block; }
-  .emoji-display {
-    font-size: 2.5rem; cursor: pointer; line-height: 1;
-    padding: 0.4rem 0.6rem;
+  /* Emoji button */
+  .emoji-btn-row { display: flex; align-items: center; gap: 1rem; margin-top: 0.4rem; }
+  .emoji-big-btn {
+    font-size: 2.8rem; line-height: 1;
     background: var(--surface2); border: 1px solid var(--border2);
-    border-radius: var(--radius-sm); display: inline-block;
+    border-radius: var(--radius-sm); padding: 0.4rem 0.7rem;
+    cursor: pointer; position: relative;
   }
-  .emoji-input-hidden {
-    position: absolute; top: 0; left: 0;
-    width: 100%; height: 100%; opacity: 0;
-    font-size: 2rem; cursor: pointer; border: none; background: transparent;
+  .emoji-big-btn input {
+    position: absolute; inset: 0; opacity: 0;
+    font-size: 2rem; cursor: pointer;
+    border: none; background: transparent; padding: 0;
+    width: 100%; height: 100%;
   }
+  .emoji-hint { font-size: 1rem; color: var(--text2); line-height: 1.4; }
 
   /* Gradient picker */
   .gradient-grid {
-    display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; margin-top: 0.4rem;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; margin-top: 0.5rem;
   }
   .gradient-opt {
     aspect-ratio: 1; border-radius: 10px; cursor: pointer;
     border: 2px solid transparent; transition: all 0.15s;
   }
-  .gradient-opt.selected { border-color: rgba(255,255,255,0.8); transform: scale(1.08); }
+  .gradient-opt.selected { border-color: rgba(255,255,255,0.8); transform: scale(1.1); }
 
-  /* Photo upload */
-  .photo-upload-btn {
-    margin-top: 0.5rem;
-    width: 100%; padding: 0.75rem;
-    border-radius: var(--radius-sm);
-    border: 1.5px dashed var(--border2);
+  /* Photo */
+  .photo-upload-label {
+    margin-top: 0.5rem; width: 100%; padding: 0.75rem;
+    border-radius: var(--radius-sm); border: 1.5px dashed var(--border2);
     background: transparent; color: var(--text2);
-    font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+    font-family: 'Caveat', cursive; font-size: 1.15rem;
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
   }
+  input[type=file] { display: none; }
   .photo-preview {
     margin-top: 0.5rem; width: 100%; height: 100px;
     object-fit: cover; border-radius: var(--radius-sm);
     border: 1px solid var(--border2); display: none;
   }
-  input[type=file] { display: none; }
 
   .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
   .btn-primary {
     flex: 1; padding: 0.85rem; border-radius: var(--radius-sm);
     background: rgba(255,255,255,0.1); border: 1px solid var(--border2);
-    color: var(--text); font-family: 'DM Sans', sans-serif;
-    font-size: 1rem; font-weight: 500; cursor: pointer;
+    color: var(--text); font-family: 'Caveat', cursive; font-size: 1.2rem; font-weight: 600;
+    cursor: pointer;
   }
-  .btn-primary:active { background: rgba(255,255,255,0.2); }
   .btn-cancel {
     padding: 0.85rem 1.1rem; border-radius: var(--radius-sm);
     background: transparent; border: 1px solid var(--border);
-    color: var(--text2); font-family: 'DM Sans', sans-serif;
-    font-size: 1rem; cursor: pointer;
+    color: var(--text2); font-family: 'Caveat', cursive; font-size: 1.2rem; cursor: pointer;
   }
   .btn-danger {
     padding: 0.85rem 1.1rem; border-radius: var(--radius-sm);
     background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3);
-    color: #f87171; font-family: 'DM Sans', sans-serif;
-    font-size: 1rem; cursor: pointer;
+    color: #f87171; font-family: 'Caveat', cursive; font-size: 1.2rem; cursor: pointer;
   }
 </style>
 </head>
 <body>
 
-<!-- Identity Screen -->
+<!-- Identity -->
 <div id="identityScreen">
   <div class="identity-card">
     <div class="big-emoji">🏠</div>
     <h2>Zettelwirtschaft</h2>
-    <p>Wer bist du? Diese Frage wird nur einmal gestellt.</p>
+    <p>Wer kramt heute in den Listen?</p>
     <div class="identity-btns">
-      <button class="id-btn blue"   onclick="setUser('david','blue')">
-        <span class="dot"></span> David
-      </button>
-      <button class="id-btn violet" onclick="setUser('catze','violet')">
-        <span class="dot"></span> Catze
-      </button>
+      <button class="id-btn blue"   onclick="setUser('david','blue')">  <span class="dot"></span> David </button>
+      <button class="id-btn violet" onclick="setUser('catze','violet')"><span class="dot"></span> Catze </button>
     </div>
   </div>
 </div>
 
-<!-- Main App -->
+<!-- App -->
 <div id="app" style="display:none">
   <div class="app-header">
     <div class="app-title">Zettelwirtschaft</div>
@@ -370,19 +338,24 @@
       <span id="userName"></span>
     </div>
   </div>
-  <div class="sync-bar">
-    <div class="sync-dot loading" id="syncDot"></div>
-    <span id="syncText">Verbinde...</span>
+
+  <div class="sync-pill loading" id="syncPill">
+    <div class="sync-dot-small"></div>
+    <span id="syncText">gleich los…</span>
   </div>
-  <button class="add-list-btn" onclick="openNewListModal()">＋ Neue Liste erstellen</button>
+
+  <button class="add-list-btn" onclick="openNewListModal()">
+    📝 neue Zettelwirtschaft starten
+  </button>
+
   <div class="lists-container" id="listsContainer"></div>
 </div>
 
 <!-- Detail View -->
 <div id="detailView">
-  <div class="detail-header" id="detailHeader">
-    <div class="detail-header-bg"></div>
-    <button class="back-btn" onclick="closeDetail()">← Zurück</button>
+  <div class="detail-bg-layer" id="detailBgLayer"></div>
+  <div class="detail-header">
+    <button class="back-btn" onclick="closeDetail()">← zurück</button>
     <div class="detail-title-wrap">
       <div class="detail-emoji" id="detailEmoji"></div>
       <div class="detail-name"  id="detailName"></div>
@@ -391,8 +364,8 @@
   </div>
   <div class="detail-body" id="detailBody"></div>
   <div class="add-item-bar">
-    <input class="name-inp" type="text" id="itemNameInput" placeholder="Eintrag hinzufügen..." inputmode="text">
-    <input class="qty-inp"  type="text" id="itemQtyInput"  placeholder="Menge" inputmode="text">
+    <input class="name-inp" type="text"   id="itemNameInput" placeholder="was fehlt noch?" inputmode="text" autocomplete="off">
+    <input class="qty-inp"  type="number" id="itemQtyInput"  placeholder="×" inputmode="numeric" min="1">
     <button class="add-btn" onclick="addItem()">＋</button>
   </div>
 </div>
@@ -401,32 +374,35 @@
 <div class="modal-overlay hidden" id="listModal">
   <div class="modal">
     <div class="modal-handle"></div>
-    <h3 id="modalTitle">Neue Liste</h3>
+    <h3 id="modalTitle">neue Liste ✨</h3>
 
-    <label>Name</label>
-    <input type="text" id="listNameInput" placeholder="z.B. Supermarkt" maxlength="40">
+    <label>Name der Liste</label>
+    <input type="text" id="listNameInput" placeholder="z.B. Kühlschrank retten" maxlength="40" autocomplete="off">
 
     <label>Emoji</label>
-    <div class="emoji-picker-wrap">
-      <div class="emoji-display" id="emojiDisplay">🛒</div>
-      <input class="emoji-input-hidden" type="text" id="emojiHiddenInput"
-             inputmode="none" readonly
-             onfocus="this.removeAttribute('readonly')"
-             oninput="handleEmojiInput(this.value)">
+    <div class="emoji-btn-row">
+      <div class="emoji-big-btn" id="emojiBigBtn">
+        <span id="emojiDisplay">🛒</span>
+        <input type="text" id="emojiTapInput" autocomplete="off"
+               placeholder=" "
+               oninput="handleEmojiInput(this.value)"
+               onfocus="this.value=''"
+               style="font-size:2rem;">
+      </div>
+      <div class="emoji-hint">Hier tippen →<br>Emoji-Tastatur öffnen</div>
     </div>
-    <div style="font-size:0.78rem;color:var(--text3);margin-top:0.4rem;">Tippe auf das Emoji um die Tastatur zu öffnen</div>
 
     <label>Hintergrund</label>
     <div class="gradient-grid" id="gradientGrid"></div>
 
-    <label>Eigenes Foto</label>
-    <label class="photo-upload-btn" for="photoInput">📷 Foto auswählen</label>
+    <label>oder eigenes Foto 📷</label>
+    <label class="photo-upload-label" for="photoInput">📸 Foto aus Galerie wählen</label>
     <input type="file" id="photoInput" accept="image/*" onchange="handlePhoto(this)">
     <img id="photoPreview" class="photo-preview" alt="Vorschau">
 
     <div class="modal-actions">
-      <button class="btn-primary" onclick="saveList()">Speichern</button>
-      <button class="btn-danger"  id="deleteListBtn" onclick="deleteCurrentList()" style="display:none">Löschen</button>
+      <button class="btn-primary" onclick="saveList()">speichern ✓</button>
+      <button class="btn-danger"  id="deleteListBtn" onclick="deleteCurrentList()" style="display:none">löschen</button>
       <button class="btn-cancel"  onclick="closeModal()">✕</button>
     </div>
   </div>
@@ -434,11 +410,8 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, onValue, push, remove, update, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-// ════════════════════════════════════════════
-// 🔧 FIREBASE KONFIGURATION
-// ════════════════════════════════════════════
 const firebaseConfig = {
   apiKey: "AIzaSyC0oBGVi_mScjg1vN-LKjc58_BgIP2-s_g",
   authDomain: "zettelwirtschaft-ca193.firebaseapp.com",
@@ -449,7 +422,6 @@ const firebaseConfig = {
   appId: "1:223187989807:web:c3db93ac788a4e4d135dda",
   measurementId: "G-2ZEQZ112EH"
 };
-// ════════════════════════════════════════════
 
 const GRADIENTS = [
   'linear-gradient(135deg,#1a1a2e,#16213e)',
@@ -473,7 +445,7 @@ let db, listsRef, currentUser, currentListId = null, editingListId = null;
 let selectedEmoji = '🛒', selectedGradient = GRADIENTS[0], selectedPhotoBase64 = null;
 let listsData = {};
 
-// Build gradient picker
+// Gradient grid
 const gradientGrid = document.getElementById('gradientGrid');
 GRADIENTS.forEach((g, i) => {
   const d = document.createElement('div');
@@ -488,26 +460,29 @@ GRADIENTS.forEach((g, i) => {
   gradientGrid.appendChild(d);
 });
 
-// Emoji input
+// Emoji input — works on iOS/Android by using a real visible input inside the button
 window.handleEmojiInput = (val) => {
-  const emojis = [...val].filter(c => /\p{Emoji}/u.test(c));
+  // grab last emoji character from whatever was typed/pasted
+  const chars = [...val];
+  const emojis = chars.filter(c => {
+    const cp = c.codePointAt(0);
+    return cp > 0x00FF; // crude but catches all emoji ranges
+  });
   if (emojis.length) {
-    selectedEmoji = emojis[emojis.length-1];
+    selectedEmoji = emojis[emojis.length - 1];
     document.getElementById('emojiDisplay').textContent = selectedEmoji;
-    document.getElementById('emojiHiddenInput').value = '';
   }
+  // clear so next tap still fires oninput
+  setTimeout(() => { document.getElementById('emojiTapInput').value = ''; }, 50);
 };
 
-// Photo upload
 window.handlePhoto = (input) => {
-  const file = input.files[0];
-  if (!file) return;
+  const file = input.files[0]; if (!file) return;
   const reader = new FileReader();
   reader.onload = e => {
     selectedPhotoBase64 = e.target.result;
-    const preview = document.getElementById('photoPreview');
-    preview.src = selectedPhotoBase64;
-    preview.style.display = 'block';
+    const p = document.getElementById('photoPreview');
+    p.src = selectedPhotoBase64; p.style.display = 'block';
     document.querySelectorAll('.gradient-opt').forEach(x=>x.classList.remove('selected'));
     selectedGradient = null;
   };
@@ -539,18 +514,19 @@ function initFirebase() {
   listsRef = ref(db, 'lists');
   onValue(listsRef, snap => {
     listsData = snap.val() || {};
-    document.getElementById('syncDot').className = 'sync-dot';
-    document.getElementById('syncText').textContent = 'Live synchronisiert';
+    const pill = document.getElementById('syncPill');
+    pill.className = 'sync-pill';
+    document.getElementById('syncText').textContent = 'alles aktuell ✓';
     renderLists();
     if (currentListId) renderDetail(currentListId);
   }, () => {
-    document.getElementById('syncDot').className = 'sync-dot error';
-    document.getElementById('syncText').textContent = 'Verbindungsfehler';
+    document.getElementById('syncPill').className = 'sync-pill error';
+    document.getElementById('syncText').textContent = 'kein Netz 😬';
   });
 }
 
 function bgStyle(list) {
-  if (list.photo)    return `background-image:url('${list.photo}')`;
+  if (list.photo)    return `background-image:url('${list.photo}');background-size:cover;background-position:center`;
   if (list.gradient) return `background:${list.gradient}`;
   return `background:${GRADIENTS[0]}`;
 }
@@ -567,8 +543,8 @@ function renderLists() {
     tile.setAttribute('style', bgStyle(list));
     tile.innerHTML = `
       <div class="list-tile-inner">
-        <div class="list-tile-left">
-          <div class="list-tile-emoji">${list.emoji||'📋'}</div>
+        <div>
+          <span class="list-tile-emoji">${list.emoji||'📋'}</span>
           <div class="list-tile-name">${list.name}</div>
           <div class="list-tile-count">${done}/${total}</div>
         </div>
@@ -579,12 +555,12 @@ function renderLists() {
   });
 }
 
-// Detail view
+// Detail
 window.openDetail = (listId) => {
   currentListId = listId;
   renderDetail(listId);
   document.getElementById('detailView').classList.add('open');
-  document.getElementById('itemNameInput').focus();
+  setTimeout(() => document.getElementById('itemNameInput').focus(), 350);
 };
 window.closeDetail = () => {
   document.getElementById('detailView').classList.remove('open');
@@ -592,17 +568,25 @@ window.closeDetail = () => {
 };
 
 function renderDetail(listId) {
-  const list  = listsData[listId]; if (!list) return;
-  const items = list.items || {};
-  const header = document.getElementById('detailHeader');
-  header.setAttribute('style', bgStyle(list) + '; background-size:cover; background-position:center;');
+  const list = listsData[listId]; if (!list) return;
+  // set bg on whole detail
+  const bgLayer = document.getElementById('detailBgLayer');
+  if (list.photo) {
+    bgLayer.style.backgroundImage = `url('${list.photo}')`;
+    bgLayer.style.background = '';
+  } else {
+    bgLayer.style.backgroundImage = '';
+    bgLayer.style.background = list.gradient || GRADIENTS[0];
+  }
   document.getElementById('detailEmoji').textContent = list.emoji || '📋';
   document.getElementById('detailName').textContent  = list.name;
 
-  const body = document.getElementById('detailBody');
+  const items  = list.items || {};
   const sorted = Object.entries(items).sort(([,a],[,b]) => (a.done-b.done)||(a.ts-b.ts));
+  const body   = document.getElementById('detailBody');
+
   if (!sorted.length) {
-    body.innerHTML = '<div class="empty-list">Noch keine Einträge 🙂</div>';
+    body.innerHTML = '<div class="empty-list">noch nix hier… leg los! 🎉</div>';
     return;
   }
   body.innerHTML = sorted.map(([itemId, item]) => {
@@ -613,7 +597,7 @@ function renderDetail(listId) {
         <div class="item-name-text ${item.done?'done':''}">${item.name}</div>
         ${item.qty ? `<div class="item-qty-text">× ${item.qty}</div>` : ''}
       </div>
-      <div class="item-owner-dot" style="background:${ownerColor}" title="${item.owner==='david'?'David':'Catze'}"></div>
+      <div class="item-owner-dot" style="background:${ownerColor}"></div>
       <button class="item-del" onclick="deleteItem('${listId}','${itemId}')">×</button>
     </div>`;
   }).join('');
@@ -627,23 +611,17 @@ window.addItem = async () => {
   await push(ref(db, `lists/${currentListId}/items`), {
     name, qty: qtyEl.value.trim(), done: false, owner: currentUser.id, ts: Date.now()
   });
-  nameEl.value = ''; qtyEl.value = '';
-  nameEl.focus();
+  nameEl.value = ''; qtyEl.value = ''; nameEl.focus();
 };
 document.getElementById('itemNameInput').addEventListener('keydown', e => { if(e.key==='Enter') window.addItem(); });
-document.getElementById('itemQtyInput').addEventListener('keydown',  e => { if(e.key==='Enter') window.addItem(); });
 
-window.toggleItem = async (listId, itemId, done) => {
-  await update(ref(db, `lists/${listId}/items/${itemId}`), {done});
-};
-window.deleteItem = async (listId, itemId) => {
-  await remove(ref(db, `lists/${listId}/items/${itemId}`));
-};
+window.toggleItem = async (listId, itemId, done) => { await update(ref(db,`lists/${listId}/items/${itemId}`),{done}); };
+window.deleteItem = async (listId, itemId)        => { await remove(ref(db,`lists/${listId}/items/${itemId}`)); };
 
-// List modal
+// Modal
 window.openNewListModal = () => {
   editingListId = null;
-  document.getElementById('modalTitle').textContent = 'Neue Liste';
+  document.getElementById('modalTitle').textContent = 'neue Liste ✨';
   document.getElementById('listNameInput').value = '';
   document.getElementById('deleteListBtn').style.display = 'none';
   document.getElementById('photoPreview').style.display = 'none';
@@ -654,10 +632,10 @@ window.openNewListModal = () => {
   document.getElementById('listModal').classList.remove('hidden');
 };
 
-window.openEditListModal = async (listId) => {
+window.openEditListModal = (listId) => {
   editingListId = listId;
   const list = listsData[listId] || {};
-  document.getElementById('modalTitle').textContent = 'Liste bearbeiten';
+  document.getElementById('modalTitle').textContent = 'Liste bearbeiten ✎';
   document.getElementById('deleteListBtn').style.display = 'block';
   document.getElementById('listNameInput').value = list.name || '';
   selectedEmoji = list.emoji || '🛒';
@@ -667,34 +645,28 @@ window.openEditListModal = async (listId) => {
   const preview = document.getElementById('photoPreview');
   if (list.photo) { preview.src = list.photo; preview.style.display = 'block'; }
   else            { preview.style.display = 'none'; }
-  document.querySelectorAll('.gradient-opt').forEach(x => x.classList.toggle('selected', x.style.background === selectedGradient));
+  document.querySelectorAll('.gradient-opt').forEach(x => {
+    x.classList.toggle('selected', x.style.background === selectedGradient);
+  });
   document.getElementById('listModal').classList.remove('hidden');
 };
 
 window.saveList = async () => {
   const name = document.getElementById('listNameInput').value.trim();
   if (!name) return;
-  const data = { name, emoji: selectedEmoji, gradient: selectedGradient || null, photo: selectedPhotoBase64 || null };
-  if (editingListId) {
-    await update(ref(db, `lists/${editingListId}`), data);
-  } else {
-    await push(listsRef, { ...data, items: {} });
-  }
+  const data = { name, emoji: selectedEmoji, gradient: selectedGradient||null, photo: selectedPhotoBase64||null };
+  if (editingListId) { await update(ref(db,`lists/${editingListId}`), data); }
+  else               { await push(listsRef, { ...data, items:{} }); }
   closeModal();
 };
 
 window.deleteCurrentList = async () => {
-  if (!editingListId) return;
-  if (confirm('Liste wirklich löschen?')) {
-    await remove(ref(db, `lists/${editingListId}`));
-    closeModal();
-    if (currentListId === editingListId) closeDetail();
-  }
+  if (!editingListId || !confirm('Liste wirklich löschen?')) return;
+  await remove(ref(db,`lists/${editingListId}`));
+  closeModal();
+  if (currentListId === editingListId) closeDetail();
 };
-window.closeModal = () => {
-  document.getElementById('listModal').classList.add('hidden');
-  editingListId = null;
-};
+window.closeModal = () => { document.getElementById('listModal').classList.add('hidden'); editingListId = null; };
 
 // Init
 const savedUser = localStorage.getItem('zw-user-id');
